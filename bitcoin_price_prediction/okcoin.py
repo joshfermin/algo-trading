@@ -1,5 +1,6 @@
 """Script to gather market data from OKCoin Spot Price API."""
 import requests
+import dateutil.parser
 from pytz import utc
 from datetime import datetime
 from pymongo import MongoClient
@@ -13,12 +14,12 @@ collection = database['historical_data']
 def tick():
     """Gather market data from OKCoin Spot Price API and insert them into a
        MongoDB collection."""
-    ticker = requests.get('https://www.okcoin.com/api/v1/ticker.do?symbol=btc_usd').json()
-    depth = requests.get('https://www.okcoin.com/api/v1/depth.do?symbol=btc_usd&size=60').json()
-    date = datetime.fromtimestamp(int(ticker['date']))
-    price = float(ticker['ticker']['last'])
-    v_bid = sum([bid[1] for bid in depth['bids']])
-    v_ask = sum([ask[1] for ask in depth['asks']])
+    ticker = requests.get('https://www.okcoin.com/api/spot/v3/instruments/BTC-USD/ticker').json()
+    depth = requests.get('https://www.okcoin.com/api/spot/v3/instruments/BTC-USD/book?size=60').json()
+    date = dateutil.parser.isoparse(ticker['timestamp'])
+    price = float(ticker['last'])
+    v_bid = sum([float(bid[1]) for bid in depth['bids']])
+    v_ask = sum([float(ask[1]) for ask in depth['asks']])
     collection.insert({'date': date, 'price': price, 'v_bid': v_bid, 'v_ask': v_ask})
     print(date, price, v_bid, v_ask)
 
