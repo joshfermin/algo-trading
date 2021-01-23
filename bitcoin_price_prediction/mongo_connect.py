@@ -1,5 +1,4 @@
 from pymongo import MongoClient
-from dotenv import load_dotenv
 from bitcoin_price_prediction.settings import DB_CONNECTION_STRING
 
 def mongo_client():
