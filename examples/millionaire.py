@@ -1,16 +1,15 @@
 from pymongo import MongoClient
 from bitcoin_price_prediction.bayesian_regression import *
+from bitcoin_price_prediction.mongo_connect import historical_data_collection
 
-client = MongoClient()
-database = client['okcoindb']
-collection = database['historical_data']
+collection = historical_data_collection()
 
 # Retrieve price, v_ask, and v_bid data points from the database.
 prices = []
 v_ask = []
 v_bid = []
 num_points = 777600
-for doc in collection.find().limit(num_points):
+for doc in collection.find().sort('_id', -1).limit(num_points):
     prices.append(doc['price'])
     v_ask.append(doc['v_ask'])
     v_bid.append(doc['v_bid'])

@@ -5,10 +5,9 @@ from pytz import utc
 from datetime import datetime
 from pymongo import MongoClient
 from apscheduler.schedulers.blocking import BlockingScheduler
+from bitcoin_price_prediction.mongo_connect import historical_data_collection
 
-client = MongoClient()
-database = client['okcoindb']
-collection = database['historical_data']
+collection = historical_data_collection()
 
 
 def tick():
@@ -20,9 +19,8 @@ def tick():
     price = float(ticker['last'])
     v_bid = sum([float(bid[1]) for bid in depth['bids']])
     v_ask = sum([float(ask[1]) for ask in depth['asks']])
-    collection.insert({'date': date, 'price': price, 'v_bid': v_bid, 'v_ask': v_ask})
+    collection.insert_one({'date': date, 'price': price, 'v_bid': v_bid, 'v_ask': v_ask})
     print(date, price, v_bid, v_ask)
-
 
 def main():
     """Run tick() at the interval of every ten seconds."""
