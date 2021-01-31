@@ -9,3 +9,8 @@ def historical_data_collection():
     client = mongo_client()
     database = client.okcoindb
     return database.historical_data
+
+def rh_crypto_collection():
+    client = mongo_client()
+    database = client.rhdb
+    return database.historical_data
