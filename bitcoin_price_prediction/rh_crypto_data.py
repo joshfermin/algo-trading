@@ -24,7 +24,8 @@ def tick(symbol):
         "high": max(seq),
         "low": min(seq),
         "date": datetime.utcnow().isoformat(),
-        "close": quotes[-1]['bid_price']
+        "close": quotes[-1]['bid_price'],
+        "symbol": symbol
     }
 
     collection.insert_one(aggregate_quote)
@@ -39,7 +40,6 @@ def main():
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):
         pass
-
 
 if __name__ == '__main__':
     main()
