@@ -5,7 +5,7 @@ from pytz import utc
 from datetime import datetime
 from pymongo import MongoClient
 from apscheduler.schedulers.blocking import BlockingScheduler
-from bitcoin_price_prediction.mongo_connect import historical_data_collection
+from algo_trading.mongo_connect import historical_data_collection
 
 collection = historical_data_collection()
 

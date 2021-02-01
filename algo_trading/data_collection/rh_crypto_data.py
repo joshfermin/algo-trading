@@ -4,12 +4,12 @@ import datetime
 import time
 from pytz import utc
 
-import bitcoin_price_prediction.robinhood 
+import algo_trading.exchanges.robinhood_auth 
 import robin_stocks as r
 
 from datetime import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
-from bitcoin_price_prediction.mongo_connect import rh_crypto_collection
+from algo_trading.mongo_connect import rh_crypto_collection
 
 collection = rh_crypto_collection()
 

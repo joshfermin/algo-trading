@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from bitcoin_price_prediction.settings import DB_CONNECTION_STRING
+from algo_trading.settings import DB_CONNECTION_STRING
 
 def mongo_client():
     connection_url = DB_CONNECTION_STRING

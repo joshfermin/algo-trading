@@ -1,6 +1,6 @@
 from pymongo import MongoClient
-from bitcoin_price_prediction.bayesian_regression import *
-from bitcoin_price_prediction.mongo_connect import historical_data_collection
+from algo_trading.strategies.bayesian_regression import *
+from algo_trading.mongo_connect import historical_data_collection
 
 collection = historical_data_collection()
 

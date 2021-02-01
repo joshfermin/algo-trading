@@ -2,11 +2,11 @@ import time
 import talib
 import numpy as np
 
-import bitcoin_price_prediction.robinhood 
+import algo_trading.exchanges.robinhood_auth
 import robin_stocks as r
 
 from pytz import utc
-from bitcoin_price_prediction.mongo_connect import rh_crypto_collection
+from algo_trading.mongo_connect import rh_crypto_collection
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 collection = rh_crypto_collection()
