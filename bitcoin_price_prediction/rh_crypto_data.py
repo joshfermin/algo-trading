@@ -14,13 +14,18 @@ from bitcoin_price_prediction.mongo_connect import rh_crypto_collection
 collection = rh_crypto_collection()
 
 def tick(symbol):
+    aggregate_quote = grab_latest_aggregate_quote(symbol)
+    collection.insert_one(aggregate_quote)
+    print(aggregate_quote)
+
+def grab_latest_aggregate_quote(symbol):
     quotes = []
-    for _ in range(5):
+    for _ in range(60):
         quotes.append(r.crypto.get_crypto_quote(symbol))
-        time.sleep(10)
+        time.sleep(1)
     
     seq = [quote['bid_price'] for quote in quotes]
-    aggregate_quote = {
+    return {
         "high": max(seq),
         "low": min(seq),
         "date": datetime.utcnow().isoformat(),
@@ -28,13 +33,9 @@ def tick(symbol):
         "symbol": symbol
     }
 
-    collection.insert_one(aggregate_quote)
-    
-    print(aggregate_quote)
-
 def main():
     """Run tick() at the interval of every ten seconds."""
-    scheduler = BlockingScheduler(timezone=utc)
+    scheduler = BlockingScheduler(timezone=utc, job_defaults={'max_instances': 2})
     scheduler.add_job(tick, 'interval', ['BTC'], seconds=60)
     try:
         scheduler.start()
