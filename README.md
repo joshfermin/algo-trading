@@ -7,14 +7,15 @@ An implementation of the 'Bayesian regression for latent source model' method fo
 * [Python](https://www.python.org/) 3.5
 * [MongoDB](http://www.mongodb.org/) 3.2
 * [bigfloat prerequisites](http://bigfloat.readthedocs.org/en/latest/#prerequisites)
+* [talib prerequisites](https://mrjbq7.github.io/ta-lib/install.html)
 
 ## Installation
 
 Make sure you have installed all the requirements and [created an isolated Python environment](https://virtualenv.pypa.io/en/stable/) for this project (optional). Then follow the installation instructions:
 
 ```sh
-    $ git clone https://github.com/stavros0/bitcoin-price-prediction.git
-    $ cd bitcoin-price-prediction
+    $ git clone https://github.com/joshfermin/algo-trading.git
+    $ cd algo-trading
     $ pip install -e .
 ```
 
