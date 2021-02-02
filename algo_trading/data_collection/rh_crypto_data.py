@@ -3,25 +3,25 @@ import requests
 import datetime
 import time
 from pytz import utc
-
-import algo_trading.exchanges.robinhood_auth 
-import robin_stocks as r
-
 from datetime import datetime
+
 from apscheduler.schedulers.blocking import BlockingScheduler
 from algo_trading.mongo_connect import rh_crypto_collection
 
+from algo_trading.exchange.exchange_context import ExchangeContext
+from algo_trading.exchange.robinhood_actions import RobinhoodActions
+
 collection = rh_crypto_collection()
 
-def tick(symbol):
-    aggregate_quote = grab_latest_aggregate_quote(symbol)
+def tick(symbol, exchange_actions):
+    aggregate_quote = grab_latest_aggregate_quote(symbol, exchange_actions)
     collection.insert_one(aggregate_quote)
     print(aggregate_quote)
 
-def grab_latest_aggregate_quote(symbol):
+def grab_latest_aggregate_quote(symbol, exchange_actions):
     quotes = []
     for _ in range(60):
-        quotes.append(r.crypto.get_crypto_quote(symbol))
+        quotes.append(exchange_actions.get_crypto_quote(symbol))
         time.sleep(1)
     
     seq = [quote['bid_price'] for quote in quotes]
@@ -36,7 +36,7 @@ def grab_latest_aggregate_quote(symbol):
 def main():
     """Run tick() at the interval of every ten seconds."""
     scheduler = BlockingScheduler(timezone=utc, job_defaults={'max_instances': 2})
-    scheduler.add_job(tick, 'interval', ['BTC'], seconds=60)
+    scheduler.add_job(tick, 'interval', ['BTC', ExchangeContext(RobinhoodActions())], seconds=60)
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):
