@@ -4,6 +4,7 @@ numpy==1.15.0
 scipy==0.17.0
 scikit-learn==0.17.1
 bigfloat==0.3.0
+pyetrade===1.2.0
 pymongo==3.11.2
 python-dotenv==0.15.0
 python-dateutil==2.8.1
