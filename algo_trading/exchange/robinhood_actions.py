@@ -14,8 +14,8 @@ class RobinhoodActions(BaseActions):
     def __init__(self):
         r.login(username=RH_USERNAME, password=RH_PASSWORD, mfa_code=pyotp.TOTP(RH_TWO_FACTOR).now())
 
-    def get_crypto_quote(self, symbol: str) -> dict:
-        return r.crypto.get_crypto_quote('BTC')
+    def get_crypto_quote(self, symbol: str = 'ETH') -> dict:
+        return r.crypto.get_crypto_quote(symbol)
 
     def get_crypto_historicals(self, symbol: str, interval: str, span: str, bounds: str) -> list:
         return r.get_crypto_historicals(symbol, interval=interval, span=span, bounds=bounds)
