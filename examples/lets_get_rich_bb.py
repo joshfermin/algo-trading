@@ -10,14 +10,15 @@ from algo_trading.exchange.exchange_context import ExchangeContext
 from algo_trading.exchange.robinhood_actions import RobinhoodActions
 
 
-def evaluate_performance(latest_sar, latest_rsi, current_bid_price, positions, position, bank_balance):
+def evaluate_performance(latest_sar, latest_rsi, current_bid_price, allin, position, bank_balance):
     # seems like 50 is sweet spot for rsi, can't be too strict because it will never buy or sell, as crypto is too volatile
     if(position == 0 and current_bid_price > latest_sar and latest_rsi < 50):
-        position += positions
-        bank_balance -= current_bid_price*positions
+        buy_amount = int(bank_balance/current_bid_price) if allin else 1
+        position += buy_amount
+        bank_balance -= current_bid_price*buy_amount
     if(position > 0 and current_bid_price < latest_sar and latest_rsi > 50):
-        position -= positions
-        bank_balance += current_bid_price*positions
+        bank_balance += current_bid_price*position
+        position -= position
     
     print("total:", round(bank_balance + current_bid_price*position, 2) , "units:", round(position, 2), "sar:", round(latest_sar, 2), "rsi:", round(latest_rsi,2), "bid_price:", round(current_bid_price, 2))
     return {
@@ -29,7 +30,7 @@ def evaluate_performance(latest_sar, latest_rsi, current_bid_price, positions, p
 def what_i_could_have_become_hour_3month():
     exchange_actions = ExchangeContext(RobinhoodActions())
 
-    bank_balance = 50000
+    bank_balance = 10000
     position = 0
     start_date = datetime.datetime(2021, 1, 2).strftime("%Y-%m-%dT%H:%M:%SZ")
     end_date = datetime.datetime(2021, 1, 30).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -53,7 +54,7 @@ def what_i_could_have_become_hour_3month():
 
         rsi_calc = rsi(prices)
 
-        performance = evaluate_performance(sar[-1], rsi_calc[-1], float(historical_period[-1]['close_price']), 1, position, bank_balance)
+        performance = evaluate_performance(sar[-1], rsi_calc[-1], float(historical_period[-1]['close_price']), True, position, bank_balance)
         bank_balance = performance['bank_balance']
         position = performance['position']
 
