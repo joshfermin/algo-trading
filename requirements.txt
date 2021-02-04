@@ -7,4 +7,4 @@ python-dotenv==0.15.0
 python-dateutil==2.8.1
 pyotp==2.4.1
 robin_stocks==1.7.0
-TA-lib
+TA-Lib
