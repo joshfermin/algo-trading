@@ -47,6 +47,7 @@ def what_i_could_have_become_hour_3month():
     pointer = start_date_index
 
     while pointer != end_date_index: 
+        # two weeks of data from for parabolic sar to analyze
         historical_period = crypto_historicals[pointer-336:pointer+1]
 
         highs = np.asarray([float(historical['high_price']) for historical in historical_period])
@@ -54,7 +55,7 @@ def what_i_could_have_become_hour_3month():
 
         sar = parabolic_sar(highs, lows)
 
-        performance = evaluate_performance(sar[-1], float(historical_period[-1]['open_price']), 300, position, bank_balance)
+        performance = evaluate_performance(sar[-1], float(historical_period[-1]['close_price']), 1, position, bank_balance)
         bank_balance = performance['bank_balance']
         position = performance['position']
 
@@ -62,3 +63,41 @@ def what_i_could_have_become_hour_3month():
         
 
 what_i_could_have_become_hour_3month()
+
+
+# big yikes
+def what_i_could_have_become_10min_week():
+    exchange_actions = ExchangeContext(RobinhoodActions())
+
+    bank_balance = 50000
+    position = 0
+    start_date = datetime.datetime(2021, 1, 30).strftime("%Y-%m-%dT%H:%M:%SZ")
+    end_date = datetime.datetime(2021, 2, 3).strftime("%Y-%m-%dT%H:%M%SZ")
+
+    crypto_historicals = exchange_actions.get_crypto_historicals("ETH", interval="10minute", span="week", bounds="24_7")
+
+    start_date_index = [historical['begins_at'] for historical in crypto_historicals].index(start_date)
+    end_date_index = [historical['begins_at'] for historical in crypto_historicals].index(end_date)
+
+    pointer = start_date_index
+    
+    # pointer_back = 336
+    # pointer_back = 30
+    pointer_back = 200
+
+    while pointer != end_date_index: 
+        historical_period = crypto_historicals[pointer-pointer_back:pointer+1]
+
+        highs = np.asarray([float(historical['high_price']) for historical in historical_period])
+        lows = np.asarray([float(historical['low_price']) for historical in historical_period])
+
+        sar = parabolic_sar(highs, lows)
+
+        performance = evaluate_performance(sar[-1], float(historical_period[-1]['close_price']), 1, position, bank_balance)
+        bank_balance = performance['bank_balance']
+        position = performance['position']
+
+        pointer += 1
+        
+
+# what_i_could_have_become_10min_week()
