@@ -40,3 +40,10 @@ class ExchangeContext():
 
     def get_crypto_historicals(self, symbol: str, interval: str, span: str, bounds: str) -> list:
         return self._strategy.get_crypto_historicals(symbol, interval, span, bounds)
+    
+    def order_crypto_by_price(self, symbol: str, amountInDollars: float, timeInForce: str) -> dict:
+        return self._strategy.order_crypto_by_price(symbol, amountInDollars, timeInForce)
+
+    def order_crypto_by_quantity(self, symbol: str, quantity: float, timeInForce: str) -> dict:
+        return self._strategy.order_crypto_by_quantity(symbol, quantity, timeInForce)
+
