@@ -32,7 +32,6 @@ class PSAR_RSI(Strategy):
 
         if(len(self.data.Close) > 336):
             if self.position.size <= 0 and current_bid_price > latest_sar and latest_rsi < 50:
-                self.position.close()
                 self.buy()
             elif self.position.size > 0 and current_bid_price < latest_sar and latest_rsi > 50 :
                 self.position.close()
