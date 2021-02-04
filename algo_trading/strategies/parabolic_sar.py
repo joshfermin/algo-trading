@@ -15,13 +15,13 @@ def parabolic_sar(highs, lows, acceleration=0.02, maximum=0.2):
     """
     return talib.SAR(highs, lows, acceleration=acceleration, maximum=maximum)
 
-def evaluate_performance(latest_sar, current_bid_price, interval, position, bank_balance):
+def evaluate_performance(latest_sar, current_bid_price, positions, position, bank_balance):
     if(position == 0 and current_bid_price > latest_sar):
-        position += 1
-        bank_balance -= current_bid_price
+        position += positions
+        bank_balance -= current_bid_price*positions
     if(position > 0 and current_bid_price < latest_sar):
-        position -= 1
-        bank_balance += current_bid_price
+        position -= positions
+        bank_balance += current_bid_price*positions
     print("position:", position, "bank_balance:", bank_balance, "sar:", latest_sar, "bid_price:", current_bid_price)
     return {
         "position": position,
