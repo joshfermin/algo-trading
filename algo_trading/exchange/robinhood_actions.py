@@ -23,6 +23,12 @@ class RobinhoodActions(BaseActions):
     def order_crypto_by_quantity(self, symbol: str, quantity: float, timeInForce: str) -> dict:
         return r.orders.order_buy_crypto_by_quantity(symbol, quantity, timeInForce)
 
+    def sell_crypto_by_price(self, symbol: str, amountInDollars: float, timeInForce: str) -> dict:
+        return r.orders.order_sell_buy_crypto_by_price(symbol, amountInDollars, timeInForce)
+
+    def sell_crypto_by_quantity(self, symbol: str, quantity: float, timeInForce: str) -> dict:
+        return r.orders.order_sell_buy_crypto_by_quantity(symbol, quantity, timeInForce)
+
     def get_crypto_historicals(self, symbol: str, interval: str, span: str, bounds: str) -> list:
         return r.get_crypto_historicals(symbol, interval=interval, span=span, bounds=bounds)
     

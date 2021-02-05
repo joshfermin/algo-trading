@@ -26,6 +26,14 @@ class BaseActions():
         pass
 
     @abstractmethod
+    def sell_crypto_by_price(self, symbol: str, amountInDollars: float, timeInForce: str):
+        pass
+
+    @abstractmethod
+    def sell_crypto_by_quantity(self, symbol: str, quantity: float, timeInForce: str):
+        pass
+
+    @abstractmethod
     def get_stock_quote(self, symbol: list):
         pass
 

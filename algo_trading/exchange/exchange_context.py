@@ -47,3 +47,9 @@ class ExchangeContext():
     def order_crypto_by_quantity(self, symbol: str, quantity: float, timeInForce: str) -> dict:
         return self._strategy.order_crypto_by_quantity(symbol, quantity, timeInForce)
 
+    def sell_crypto_by_price(self, symbol: str, amountInDollars: float, timeInForce: str):
+        return self._strategy.sell_crypto_by_price(symbol, quantity, timeInForce)
+
+    def sell_crypto_by_quantity(self, symbol: str, quantity: float, timeInForce: str):
+       return self._strategy.sell_crypto_by_quantity(symbol, quantity, timeInForce)
+
