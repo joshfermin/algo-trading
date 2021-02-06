@@ -8,6 +8,8 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from algo_trading.mongo_connect import historical_data_collection
 from pymongo import errors
 
+SYMBOLS_TO_TRACK = [('ETH', 'ETH-USD'), ('BTC', 'BTC-USD'), ('LTC', 'LTC-USD')]
+
 def record_data(symbol, instrument_id, granularity_in_seconds, granularity_name):
     collection = historical_data_collection(symbol, granularity_name)
     """Gather market data from OKCoin Spot Price API and insert them into a
@@ -35,10 +37,13 @@ def record_data(symbol, instrument_id, granularity_in_seconds, granularity_name)
 def main():
     """Run tick() at the interval of every ten seconds."""
     scheduler = BlockingScheduler(timezone=utc)
-    scheduler.add_job(record_data, 'cron', ['ETH', 'ETH-USD', 86400, 'day'], day="*")
-    scheduler.add_job(record_data, 'cron', ['ETH', 'ETH-USD', 3600, 'hour'], hour="*")
-    scheduler.add_job(record_data, 'cron', ['ETH', 'ETH-USD', 300, 'five_minutes'], minute="*/5")
-    scheduler.add_job(record_data, 'cron', ['ETH', 'ETH-USD', 60, 'one_minute'], minute="*")
+
+    for symbol in SYMBOLS_TO_TRACK:
+        scheduler.add_job(record_data, 'cron', [symbol[0], symbol[1], 86400, 'day'], day="*")
+        scheduler.add_job(record_data, 'cron', [symbol[0], symbol[1], 3600, 'hour'], hour="*")
+        scheduler.add_job(record_data, 'cron', [symbol[0], symbol[1], 300, 'five_minutes'], minute="*/5")
+        scheduler.add_job(record_data, 'cron', [symbol[0], symbol[1], 60, 'one_minute'], minute="*")
+    
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):
