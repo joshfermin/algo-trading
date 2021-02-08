@@ -1,4 +1,6 @@
-# Bitcoin price prediction
+![](https://media.giphy.com/media/v18xOnxDRt8aI/giphy.gif)
+
+# Algo Trading
 
 An implementation of the 'Bayesian regression for latent source model' method for predicting price variation of [Bitcoin](https://bitcoin.org). You can read more about the method at https://arxiv.org/pdf/1410.1231.pdf.
 
