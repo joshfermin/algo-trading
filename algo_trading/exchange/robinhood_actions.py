@@ -20,6 +20,9 @@ class RobinhoodActions(BaseActions):
     def get_crypto_quote(self, symbol: str) -> dict:
         return r.crypto.get_crypto_quote(symbol)
 
+    def get_crypto_positions(self, info=None):
+        return r.crypto.get_crypto_positions(info)
+
     def order_crypto_by_price(self, symbol: str, amountInDollars: float, timeInForce: str) -> dict:
         return r.orders.order_buy_crypto_by_price(symbol, amountInDollars, timeInForce)
 

@@ -41,6 +41,9 @@ class ExchangeContext():
     def get_account_profile(self, info: str = None):
         return self._strategy.get_account_profile(info)
 
+    def get_crypto_positions(self, info: str = None):
+        return self._strategy.get_crypto_positions(info)
+
     def get_crypto_historicals(self, symbol: str, interval: str, span: str, bounds: str) -> list:
         return self._strategy.get_crypto_historicals(symbol, interval, span, bounds)
     
