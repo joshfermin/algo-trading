@@ -17,19 +17,34 @@ from algo_trading.exchange.exchange_context import ExchangeContext
 from algo_trading.exchange.robinhood_actions import RobinhoodActions
 from utils.time import handle_time_period
 
+# move to utils
+import decimal
+
+def float_range(start, stop, step):
+    while start < stop:
+        yield float(start)
+        start += decimal.Decimal(step)
+
+
 # 
 # TODO: move this test strat out of her to make it more robust in taking an strats
 # 
 class THE_VERSION_WE_CALL_ONE(Strategy):
+    # p_sar_accel = 0.015
+    # p_sar_max = 0.06
+    p_sar_accel = 0.02
+    p_sar_max = 0.2
+    sma_long = 48
+    sma_short = 24
 
     def init(self, position = 0):
         close = self.data.Close
         high = self.data.High
         low = self.data.Low
 
-        self.p_sar = ParabolicSAR(1, 0.02, 0.2)
+        self.p_sar = ParabolicSAR(1, self.p_sar_accel, self.p_sar_max)
         self.rsi = RSI(0, 50, 50)
-        self.sma = SMA_CROSSOVER_TREND(1, 48, 24)
+        self.sma = SMA_CROSSOVER_TREND(1, self.sma_long, self.sma_short)
         self.stop_loss = STOP_LOSS(1, -0.05)
 
         self.indicator_p_sar = self.I(self.p_sar.calcParabolicSAR, high, low)
@@ -69,8 +84,8 @@ def backtest_our_fate(strat, ticker, cash):
     exchange_actions = ExchangeContext(RobinhoodActions())
     crypto_historicals = exchange_actions.get_crypto_historicals(ticker, interval="hour", span="3month", bounds="24_7")
 
-    # start_date = datetime.datetime(2021, 1, 2)
-    # end_date = datetime.datetime(2021, 2, 6)
+    start_date = datetime.datetime(2021, 1, 2)
+    end_date = datetime.datetime(2021, 2, 6)
 
     historical_period = handle_time_period(crypto_historicals, start_date, end_date)
 
@@ -94,6 +109,19 @@ def backtest_our_fate(strat, ticker, cash):
     output = bt.run()
     print('---------------------------------')
     print("Return [%]:  ", output["Return [%]"])
+    print('---------------------------------')
+
+    optimize_me = bt.optimize(  
+                                p_sar_accel=list(float_range(0, 0.02, '0.002')),
+                                p_sar_max=list(float_range(0, 0.5, '0.02')),
+                                sma_short=range(0, 30),
+                                sma_long=range(0, 60),
+                                constraint=lambda p: p.sma_short < p.sma_long
+                                )
+    # print(optimize_me.to_string())
+    print('---------------------------------')
+    print("Return [%]:  ", optimize_me["Return [%]"])
+    print("what it is  ", optimize_me["_strategy"])
     print('---------------------------------')
 
     print(' ')
