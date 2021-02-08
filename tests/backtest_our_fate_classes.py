@@ -25,9 +25,9 @@ class PSAR_RSI(Strategy):
         high = self.data.High
         low = self.data.Low
 
-        self.p_sar = ParabolicSAR(1, 0.01, 0.2)
+        self.p_sar = ParabolicSAR(0, 0.01, 0.2)
         self.rsi = RSI(0, 50, 50)
-        self.sma = SMA_CROSSOVER_TREND(1, 300, 100)
+        self.sma = SMA_CROSSOVER_EVENT(1, 300, 100)
 
         self.indicator_p_sar = self.I(self.p_sar.calcParabolicSAR, high, low)
         self.indicator_rsi = self.I(self.rsi.calcRSI, close)
@@ -64,7 +64,7 @@ def backtest_our_fate(strat, ticker, cash):
     crypto_historicals = exchange_actions.get_crypto_historicals(ticker, interval="hour", span="3month", bounds="24_7")
 
     # handle start and end day to find the corresponding indexes in historical crypto data
-    start_date = datetime.datetime(2021, 1, 2).strftime("%Y-%m-%dT%H:%M:%SZ")
+    start_date = datetime.datetime(2020, 12, 2).strftime("%Y-%m-%dT%H:%M:%SZ")
     end_date = datetime.datetime(2021, 1, 30).strftime("%Y-%m-%dT%H:%M:%SZ")
     start_date_index = [historical['begins_at'] for historical in crypto_historicals].index(start_date)
     end_date_index = [historical['begins_at'] for historical in crypto_historicals].index(end_date)
