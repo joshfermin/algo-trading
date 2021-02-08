@@ -8,24 +8,36 @@ from algo_trading.exchange.exchange_context import ExchangeContext
 from algo_trading.exchange.robinhood_actions import RobinhoodActions
 from algo_trading.strategies.parabolic_sar import ParabolicSAR
 from algo_trading.strategies.sma import SMA_CROSSOVER_TREND
+from utils.args import get_config_from_args
 
 
 class LiveTrading():
-    p_sar_accel = 0.015
-    p_sar_max = 0.06
-    sma_long = 46
-    sma_short = 21
+    # p_sar_accel = 0.015
+    # p_sar_max = 0.06
+    # sma_long = 46
+    # sma_short = 21
 
-    def __init__(self, symbol, exchange_actions, cash=None):
-        self.symbol = symbol
+    def __init__(self, config, exchange_actions):
+        self.symbol = config['symbol']
         self.exchange_actions = exchange_actions
-        self.cash = cash
+        self.cash = config['cash']
+
+        self.interval = config['historicals']['interval']
+        self.span = config['historicals']['span']
+
+        self.p_sar_accel = config['p_sar']['accel']
+        self.p_sar_max = config['p_sar']['max']
+
+        self.sma_long = config['sma']['long']
+        self.sma_short = config['sma']['short']
+
         self.p_sar = ParabolicSAR(1, self.p_sar_accel, self.p_sar_max)
         self.sma = SMA_CROSSOVER_TREND(1, self.sma_long, self.sma_short)
 
     def get_historicals(self):
-        crypto_historicals = self.exchange_actions.get_crypto_historicals(self.symbol, "15second", "hour", "24_7")
+        crypto_historicals = self.exchange_actions.get_crypto_historicals(self.symbol, self.interval, self.span, "24_7")
         print(f"last close price: {crypto_historicals[-1]['close_price']}")
+        print(f"last candle begins at: {crypto_historicals[-1]['begins_at']}")
         close_prices = np.asarray([float(historical['close_price']) for historical in crypto_historicals])
         open_prices = np.asarray([float(historical['open_price']) for historical in crypto_historicals])
         highs = np.asarray([float(historical['high_price']) for historical in crypto_historicals])
@@ -95,10 +107,20 @@ class LiveTrading():
 
 def main():
     exchange_actions = ExchangeContext(RobinhoodActions())
-    live_trading = LiveTrading('DOGE', exchange_actions, 1.00)
+
+    config = get_config_from_args()
+
+    print('config:', config)
+    print('----------')
+
+    live_trading = LiveTrading( config, exchange_actions)
     
     scheduler = BlockingScheduler(timezone=utc)
-    scheduler.add_job(live_trading.execute, 'cron', second="*/15")
+
+    if config['historicals']['interval'] == "15second":
+        scheduler.add_job(live_trading.execute, 'cron', second="*/15")
+    elif config['historicals']['interval'] == "5minute":
+        scheduler.add_job(live_trading.execute, 'cron', minute="*/5")
     
     try:
         scheduler.start()
