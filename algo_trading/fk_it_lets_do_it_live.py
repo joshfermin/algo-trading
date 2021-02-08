@@ -1,5 +1,6 @@
 import numpy as np
 import statistics
+import time
 
 from pytz import utc
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -67,19 +68,22 @@ class LiveTrading():
             else:
                 buy_order = exchange_actions.order_crypto_by_price(self.symbol, self.cash, 'gtc')
                 order_id = buy_order['id']
+                # FOR COINS THAT NEED WHOLE NUMBERS:
+                # shares = round(self.cash/float(current_quote['bid_price']), 0)
+                # buy_order = self.exchange_actions.order_crypto_by_quantity(self.symbol, shares, 'gtc')
                 print(f"BUYING {self.symbol}: {buy_order}")
         elif position != None and float(position['quantity_available']) > 0.0 and average_score == -1:
             # sell
             position_quantity = float(self.get_crypto_position()['quantity_available'])
-            sell_order = exchange_actions.sell_crypto_by_quantity(self.symbol, position_quantity, "gtc")
-            order_id = sell_order['id']
+            sell_order = self.exchange_actions.sell_crypto_by_quantity(self.symbol, position_quantity, "gtc")
             print(f"SELLING {self.symbol}: {sell_order}")
+            order_id = sell_order['id']
 
         if (order_id != None):
-            order = exchange_actions.get_crypto_order_info(order_id)
+            order = self.exchange_actions.get_crypto_order_info(order_id)
             while order['cancel_url'] != None:
-                order = exchange_actions.get_crypto_order_info(order_id)
-                sleep(5)
+                order = self.exchange_actions.get_crypto_order_info(order_id)
+                time.sleep(5)
             amount_usd = float(order['rounded_executed_notional'])
             order_side = order['side']
             if order_side == 'sell':
@@ -91,7 +95,7 @@ class LiveTrading():
 
 def main():
     exchange_actions = ExchangeContext(RobinhoodActions())
-    live_trading = LiveTrading('DOGE', exchange_actions, 1.0)
+    live_trading = LiveTrading('DOGE', exchange_actions, 1.00)
     
     scheduler = BlockingScheduler(timezone=utc)
     scheduler.add_job(live_trading.execute, 'cron', second="*/15")
