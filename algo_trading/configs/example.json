@@ -1,5 +1,5 @@
 {
-    "cash": 40000,
+    "cash": 10,
     "symbol": "LTC",
     "historicals":{
         "interval": "5minute",
