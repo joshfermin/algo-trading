@@ -16,7 +16,11 @@ class BaseActions():
     @abstractmethod
     def get_crypto_position(self, info: str = None):
         pass
-
+    
+    @abstractmethod
+    def get_crypto_order_info(self, id: str):
+        pass
+    
     @abstractmethod
     def get_crypto_quote(self, symbol: str):
         pass

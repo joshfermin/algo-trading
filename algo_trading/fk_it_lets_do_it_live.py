@@ -15,16 +15,16 @@ class LiveTrading():
     sma_long = 46
     sma_short = 21
 
-    def __init__(self, symbol, exchange_actions, sell_amount=None):
+    def __init__(self, symbol, exchange_actions, cash=None):
         self.symbol = symbol
         self.exchange_actions = exchange_actions
-        self.sell_amount = sell_amount
+        self.cash = cash
         self.p_sar = ParabolicSAR(1, self.p_sar_accel, self.p_sar_max)
         self.sma = SMA_CROSSOVER_TREND(1, self.sma_long, self.sma_short)
 
     def get_historicals(self):
-        crypto_historicals = self.exchange_actions.get_crypto_historicals(self.symbol, "hour", "3month", "24_7")
-        print(crypto_historicals[-1])
+        crypto_historicals = self.exchange_actions.get_crypto_historicals(self.symbol, "15second", "hour", "24_7")
+        print(f"last close price: {crypto_historicals[-1]['close_price']}")
         close_prices = np.asarray([float(historical['close_price']) for historical in crypto_historicals])
         open_prices = np.asarray([float(historical['open_price']) for historical in crypto_historicals])
         highs = np.asarray([float(historical['high_price']) for historical in crypto_historicals])
@@ -37,7 +37,7 @@ class LiveTrading():
         }
 
     def get_crypto_buying_power(self):
-        return self.exchange_actions.get_account_profile('crypto_buying_power')
+        return float(self.exchange_actions.get_account_profile('crypto_buying_power'))
     
     def get_crypto_position(self):
         return next((x for x in self.exchange_actions.get_crypto_positions() if x['currency']['code'] == self.symbol), None)
@@ -46,6 +46,8 @@ class LiveTrading():
         return self.exchange_actions.get_crypto_quote(self.symbol)
 
     def execute(self):
+        order_id = None
+
         position = self.get_crypto_position()
         current_quote = self.get_crypto_quote()
         
@@ -57,22 +59,42 @@ class LiveTrading():
         scores = np.array([p_sar_score, sma_score])
         average_score = statistics.mean(scores[scores != 0])
 
-        if (position == None or float(position['quantity_available']) == 0.0 ) and average_score >= 1:
+        if (position == None or float(position['quantity_available']) == 0.0) and average_score >= 1:
             # buy
             buying_power = self.get_crypto_buying_power()
-            print(f"BUYING ETH: {buying_power}")
-        elif float(position['quantity_available']) > 0.0 and average_score == -1:
+            if (self.cash > buying_power):
+                raise BaseException(f"Not enough buying power: {buying_power} for given cash amount: {self.cash}")
+            else:
+                buy_order = exchange_actions.order_crypto_by_price(self.symbol, self.cash, 'gtc')
+                order_id = buy_order['id']
+                print(f"BUYING {self.symbol}: {buy_order}")
+        elif position != None and float(position['quantity_available']) > 0.0 and average_score == -1:
             # sell
-            position_quantity = self.get_crypto_position()['quantity_available']
-            print(f"SELLING ETH: {position_quantity}")
+            position_quantity = float(self.get_crypto_position()['quantity_available'])
+            sell_order = exchange_actions.sell_crypto_by_quantity(self.symbol, position_quantity, "gtc")
+            order_id = sell_order['id']
+            print(f"SELLING {self.symbol}: {sell_order}")
 
+        if (order_id != None):
+            order = exchange_actions.get_crypto_order_info(order_id)
+            while order['cancel_url'] != None:
+                order = exchange_actions.get_crypto_order_info(order_id)
+                sleep(5)
+            amount_usd = float(order['rounded_executed_notional'])
+            order_side = order['side']
+            if order_side == 'sell':
+                self.cash += amount_usd
+            elif order_side == 'buy':
+                self.cash -= amount_usd
+            print("----")
+            print(f"cash: {self.cash}, side: {order_side}, usd_amount: {amount_usd}")
 
 def main():
     exchange_actions = ExchangeContext(RobinhoodActions())
-    live_trading = LiveTrading('ETH', exchange_actions)
+    live_trading = LiveTrading('DOGE', exchange_actions, 1.0)
     
     scheduler = BlockingScheduler(timezone=utc)
-    scheduler.add_job(live_trading.execute, 'cron', hour="*")
+    scheduler.add_job(live_trading.execute, 'cron', second="*/15")
     
     try:
         scheduler.start()

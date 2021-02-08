@@ -40,6 +40,9 @@ class ExchangeContext():
 
     def get_account_profile(self, info: str = None):
         return self._strategy.get_account_profile(info)
+    
+    def get_crypto_order_info(self, order_id: str) -> dict:
+        return self._strategy.get_crypto_order_info(order_id)
 
     def get_crypto_positions(self, info: str = None):
         return self._strategy.get_crypto_positions(info)
