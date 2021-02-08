@@ -1,0 +1,8 @@
+{
+    "cash": 40000,
+    "symbol": "LTC",
+    "historicals":{
+        "interval": "5minute",
+        "span": "week"
+    }
+}
