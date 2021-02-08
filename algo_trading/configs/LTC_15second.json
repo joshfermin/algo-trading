@@ -1,9 +1,9 @@
 {
-    "cash": 10,
+    "cash": 10.0,
     "symbol": "LTC",
     "historicals":{
-        "interval": "5minute",
-        "span": "week"
+        "interval": "15second",
+        "span": "hour"
     },
     "p_sar": {
         "accel": 0.015,

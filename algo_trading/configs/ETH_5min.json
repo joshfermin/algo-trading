@@ -1,6 +1,6 @@
 {
-    "cash": 10,
-    "symbol": "LTC",
+    "cash": 10000,
+    "symbol": "ETH",
     "historicals":{
         "interval": "5minute",
         "span": "week"
