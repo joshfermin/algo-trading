@@ -66,7 +66,7 @@ class LiveTrading():
             if (self.cash > buying_power):
                 raise BaseException(f"Not enough buying power: {buying_power} for given cash amount: {self.cash}")
             else:
-                buy_order = exchange_actions.order_crypto_by_price(self.symbol, self.cash, 'gtc')
+                buy_order = self.exchange_actions.order_crypto_by_price(self.symbol, self.cash, 'gtc')
                 order_id = buy_order['id']
                 # FOR COINS THAT NEED WHOLE NUMBERS:
                 # shares = round(self.cash/float(current_quote['bid_price']), 0)
