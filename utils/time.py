@@ -1,9 +1,7 @@
 # 
 # move to a utils function
 # 
-def handle_time_period(total_historicals, start_date=None, end_date=None):
-    offset = 336
-    # offset = 10
+def handle_time_period(total_historicals, start_date=None, end_date=None, offset=336):
     start_index = offset
     end_index = len(total_historicals)
 
