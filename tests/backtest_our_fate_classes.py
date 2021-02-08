@@ -16,6 +16,7 @@ from algo_trading.strategies.sma import SMA_CROSSOVER_TREND, SMA_CROSSOVER_EVENT
 from algo_trading.exchange.exchange_context import ExchangeContext
 from algo_trading.exchange.robinhood_actions import RobinhoodActions
 from utils.time import handle_time_period
+from utils.args import get_config_from_args
 
 # move to utils
 import decimal
@@ -53,7 +54,7 @@ class THE_VERSION_WE_CALL_ONE(Strategy):
     def next(self):
         current_bid_price = self.data.Close[-1]
 
-        if(len(self.data.Close) > 336):
+        if(len(self.data.Close) > 20):
             p_sar_score = self.p_sar.getScore(current_bid_price, self.data.High, self.data.Low)
             rsi_score = self.rsi.getScore(self.data.Close)
             sma_score = self.sma.getScore(self.data.Close)
@@ -76,16 +77,16 @@ class THE_VERSION_WE_CALL_ONE(Strategy):
             #         "bid_price:", round(current_bid_price, 2))
 
 
-def backtest_our_fate(strat, ticker, cash):
+def backtest_our_fate(strat, ticker, cash, interval, span):
     start_date = None
     end_date = None
     exchange_actions = ExchangeContext(RobinhoodActions())
-    crypto_historicals = exchange_actions.get_crypto_historicals(ticker, interval="hour", span="3month", bounds="24_7")
+    crypto_historicals = exchange_actions.get_crypto_historicals(ticker, interval=interval, span=span, bounds="24_7")
 
-    start_date = datetime.datetime(2021, 1, 2)
-    end_date = datetime.datetime(2021, 2, 6)
+    # start_date = datetime.datetime(2021, 1, 2)
+    # end_date = datetime.datetime(2021, 2, 6)
 
-    historical_period = handle_time_period(crypto_historicals, start_date, end_date)
+    historical_period = handle_time_period(crypto_historicals, start_date, end_date, 20)
 
     # get all relevant prices from the historical period above
     close_prices = np.asarray([float(historical['close_price']) for historical in historical_period])
@@ -130,5 +131,8 @@ def backtest_our_fate(strat, ticker, cash):
     bt.plot(filename="tests/plots/HEREWEGO.html")
 
 
-backtest_our_fate(THE_VERSION_WE_CALL_ONE, "ETH", 40000)
+config = get_config_from_args()
+
+backtest_our_fate(THE_VERSION_WE_CALL_ONE, config['symbol'], config['cash'],
+                config['historicals']['interval'], config['historicals']['span'])
 
