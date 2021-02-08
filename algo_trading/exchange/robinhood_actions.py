@@ -14,6 +14,9 @@ class RobinhoodActions(BaseActions):
     def __init__(self):
         r.login(username=RH_USERNAME, password=RH_PASSWORD, mfa_code=pyotp.TOTP(RH_TWO_FACTOR).now())
 
+    def get_account_profile(self, info=None) -> dict:
+        return r.profiles.load_account_profile(info)
+
     def get_crypto_quote(self, symbol: str) -> dict:
         return r.crypto.get_crypto_quote(symbol)
 

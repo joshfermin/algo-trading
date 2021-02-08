@@ -10,6 +10,10 @@ class BaseActions():
     """
 
     @abstractmethod
+    def get_account_profile(self, info: str = None):
+        pass
+
+    @abstractmethod
     def get_crypto_quote(self, symbol: str):
         pass
 
