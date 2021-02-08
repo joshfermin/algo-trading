@@ -54,7 +54,7 @@ class THE_VERSION_WE_CALL_ONE(Strategy):
     def next(self):
         current_bid_price = self.data.Close[-1]
 
-        if(len(self.data.Close) > 20):
+        if(len(self.data.Close) > 100):
             p_sar_score = self.p_sar.getScore(current_bid_price, self.data.High, self.data.Low)
             rsi_score = self.rsi.getScore(self.data.Close)
             sma_score = self.sma.getScore(self.data.Close)
@@ -86,7 +86,7 @@ def backtest_our_fate(strat, ticker, cash, interval, span):
     # start_date = datetime.datetime(2021, 1, 2)
     # end_date = datetime.datetime(2021, 2, 6)
 
-    historical_period = handle_time_period(crypto_historicals, start_date, end_date, 20)
+    historical_period = handle_time_period(crypto_historicals, start_date, end_date, 100)
 
     # get all relevant prices from the historical period above
     close_prices = np.asarray([float(historical['close_price']) for historical in historical_period])
@@ -115,7 +115,7 @@ def backtest_our_fate(strat, ticker, cash, interval, span):
     #                             # p_sar_max=list(float_range(0, 0.5, '0.02')),
     #                             sma_short=range(10, 30),
     #                             sma_long=range(20, 50),
-    #                             # constraint=lambda p: p.sma_short < p.sma_long
+    #                             constraint=lambda p: p.sma_short < p.sma_long
     #                             )
     # # print(optimize_me.to_string())
     # print('---------------------------------')
