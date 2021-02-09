@@ -31,10 +31,13 @@ def float_range(start, stop, step):
 # TODO: move this test strat out of her to make it more robust in taking an strats
 # 
 class THE_VERSION_WE_CALL_ONE(Strategy):
-    p_sar_accel = 0.015
-    p_sar_max = 0.06
-    sma_long = 46
-    sma_short = 21
+    config = get_config_from_args()
+    print('config:', config)
+
+    p_sar_accel = config['p_sar']['accel']
+    p_sar_max = config['p_sar']['max']
+    sma_long = config['sma']['long']
+    sma_short = config['sma']['short']
 
     def init(self, position = 0):
         close = self.data.Close
