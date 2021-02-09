@@ -118,6 +118,8 @@ def main():
         scheduler.add_job(live_trading.execute, 'cron', second="*/15")
     elif config['historicals']['interval'] == "5minute":
         scheduler.add_job(live_trading.execute, 'cron', minute="*/5")
+    elif config['historicals']['interval'] == "hour":
+        scheduler.add_job(live_trading.execute, 'cron', hour="*")
     
     try:
         scheduler.start()
