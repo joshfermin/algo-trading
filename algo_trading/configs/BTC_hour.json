@@ -1,5 +1,5 @@
 {
-    "cash": 40000,
+    "cash": 40000.0,
     "symbol": "BTC",
     "historicals":{
         "interval": "hour",
