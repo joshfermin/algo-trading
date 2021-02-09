@@ -80,7 +80,12 @@ class THE_VERSION_WE_CALL_ONE(Strategy):
             #         "bid_price:", round(current_bid_price, 2))
 
 
-def backtest_our_fate(strat, ticker, cash, interval, span):
+def backtest_our_fate(strat, config):
+    ticker = config['symbol']
+    cash = config['cash']
+    interval = config['historicals']['interval']
+    span = config['historicals']['span']
+
     start_date = None
     end_date = None
     exchange_actions = ExchangeContext(RobinhoodActions())
@@ -131,11 +136,10 @@ def backtest_our_fate(strat, ticker, cash, interval, span):
     print('DISREGARD, THIS IS FINE.... I THINK')
 
     # plot it up, plot it up
-    bt.plot(filename="tests/plots/HEREWEGO.html")
+    bt.plot(filename=f"tests/plots/{ticker}_{interval}_{span}.html")
 
 
 config = get_config_from_args()
 
-backtest_our_fate(THE_VERSION_WE_CALL_ONE, config['symbol'], config['cash'],
-                config['historicals']['interval'], config['historicals']['span'])
+backtest_our_fate(THE_VERSION_WE_CALL_ONE, config)
 
