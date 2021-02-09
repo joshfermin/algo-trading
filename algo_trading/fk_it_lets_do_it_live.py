@@ -12,15 +12,12 @@ from utils.args import get_config_from_args
 
 
 class LiveTrading():
-    # p_sar_accel = 0.015
-    # p_sar_max = 0.06
-    # sma_long = 46
-    # sma_short = 21
+
 
     def __init__(self, config, exchange_actions):
         self.symbol = config['symbol']
         self.exchange_actions = exchange_actions
-        self.cash = config['cash']
+        self.cash = 0 if self.get_crypto_position else config['cash']
 
         self.interval = config['historicals']['interval']
         self.span = config['historicals']['span']

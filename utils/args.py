@@ -15,7 +15,7 @@ def get_config_from_args():
     else:
         overrides = get_cmd_line_overrides(sys.argv[1:])
     
-    if overrides["config"]:
+    if "config" in overrides:
          print(f'using custom config file: {overrides["config"]}')
          config = overrides["config"]
 
