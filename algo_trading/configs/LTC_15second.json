@@ -1,0 +1,16 @@
+{
+    "cash": 10.0,
+    "symbol": "LTC",
+    "historicals":{
+        "interval": "15second",
+        "span": "hour"
+    },
+    "p_sar": {
+        "accel": 0.015,
+        "max": 0.06
+    },
+    "sma": {
+        "long": 46,
+        "short": 21
+    }
+}
