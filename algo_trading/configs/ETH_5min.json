@@ -1,5 +1,5 @@
 {
-    "cash": 10000,
+    "cash": 1000.0,
     "symbol": "ETH",
     "historicals":{
         "interval": "5minute",

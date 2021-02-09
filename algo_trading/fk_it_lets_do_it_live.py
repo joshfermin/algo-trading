@@ -17,7 +17,7 @@ class LiveTrading():
     def __init__(self, config, exchange_actions):
         self.symbol = config['symbol']
         self.exchange_actions = exchange_actions
-        self.cash = 0 if self.get_crypto_position else config['cash']
+        self.cash = float(0 if self.get_crypto_position else config['cash'])
 
         self.interval = config['historicals']['interval']
         self.span = config['historicals']['span']
@@ -76,11 +76,11 @@ class LiveTrading():
                 raise BaseException(f"Not enough buying power: {buying_power} for given cash amount: {self.cash}")
             else:
                 buy_order = self.exchange_actions.order_crypto_by_price(self.symbol, self.cash, 'gtc')
+                print(f"BUYING {self.symbol}: {buy_order}")
                 order_id = buy_order['id']
                 # FOR COINS THAT NEED WHOLE NUMBERS:
                 # shares = round(self.cash/float(current_quote['bid_price']), 0)
                 # buy_order = self.exchange_actions.order_crypto_by_quantity(self.symbol, shares, 'gtc')
-                print(f"BUYING {self.symbol}: {buy_order}")
         elif position != None and float(position['quantity_available']) > 0.0 and average_score == -1:
             # sell
             position_quantity = float(self.get_crypto_position()['quantity_available'])

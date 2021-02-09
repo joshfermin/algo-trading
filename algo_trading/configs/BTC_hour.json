@@ -1,6 +1,6 @@
 {
-    "cash": 1000.0,
-    "symbol": "ETH",
+    "cash": 40000,
+    "symbol": "BTC",
     "historicals":{
         "interval": "hour",
         "span": "month"
