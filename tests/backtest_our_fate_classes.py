@@ -5,6 +5,7 @@ import pandas as pd
 import datetime
 import sys, getopt
 import statistics
+import dateutil.parser
 
 from backtesting.test import SMA, GOOG
 
@@ -96,10 +97,12 @@ def backtest_our_fate(strat, ticker, cash, interval, span):
     open_prices = np.asarray([float(historical['open_price']) for historical in historical_period])
     highs = np.asarray([float(historical['high_price']) for historical in historical_period])
     lows = np.asarray([float(historical['low_price']) for historical in historical_period])
+    dates = np.asarray([dateutil.parser.isoparse(historical['begins_at'])for historical in historical_period])
 
     # format into pandas DataFrame format for ingestion into Backtest
-    d = {'Open': open_prices, 'High': highs, 'Low':lows, 'Close': close_prices}
+    d = {'Open': open_prices, 'High': highs, 'Low':lows, 'Close': close_prices, 'Datetime': dates}
     d_formated = pd.DataFrame(data=d)
+    d_formated.set_index(pd.DatetimeIndex(d['Datetime']), inplace=True)
 
     bt = Backtest(d_formated, strat,
               cash=cash, commission=0.0,
