@@ -1,16 +1,16 @@
 {
     "cash": 10000,
-    "symbol": "ETH",
+    "symbol": "LTC",
     "historicals":{
         "interval": "5minute",
         "span": "week"
     },
     "p_sar": {
-        "accel": 0.015,
-        "max": 0.06
+        "accel": 0.014,
+        "max": 0.04
     },
     "sma": {
-        "long": 27,
-        "short": 10
+        "long": 46,
+        "short": 26
     }
 }

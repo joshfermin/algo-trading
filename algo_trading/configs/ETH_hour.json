@@ -1,0 +1,16 @@
+{
+    "cash": 500,
+    "symbol": "ETH",
+    "historicals":{
+        "interval": "hour",
+        "span": "month"
+    },
+    "p_sar": {
+        "accel": 0.014,
+        "max": 0.06
+    },
+    "sma": {
+        "long": 28,
+        "short": 14
+    }
+}
