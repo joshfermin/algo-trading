@@ -5,7 +5,7 @@ import numpy as np
 from algo_trading.enums import Decision
 
 class ParabolicSAR():
-    def __init__(self, params):
+    def __init__(self, params={"acceleration": 0.02, "maximum": 0.2}):
         self.acceleration = params['acceleration']
         self.maximum = params['maximum']
 
@@ -20,8 +20,9 @@ class ParabolicSAR():
     def calcParabolicSAR(self, highs, lows):
         return talib.SAR(highs, lows, acceleration=self.acceleration, maximum=self.maximum)
 
-    def getScore(self, price, highs, lows):
-        sar = self.calcParabolicSAR(highs, lows)
+    def getDecision(self, params):
+        price = params['close'][-1]
+        sar = self.calcParabolicSAR(params['high'], params['low'])
         
         if price > sar[-1]:
             return Decision.BUY

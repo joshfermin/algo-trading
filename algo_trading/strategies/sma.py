@@ -18,9 +18,9 @@ class SMA:
     def calcSMA(self, prices, term):
         return talib.SMA(prices, term)
     
-    def getScore(self, prices):
-        sma_long = self.calcSMA(prices, self.longer)
-        sma_short = self.calcSMA(prices, self.shorter)
+    def getDecision(self, params):
+        sma_long = self.calcSMA(params['close'], self.longer)
+        sma_short = self.calcSMA(params['close'], self.shorter)
 
         if sma_long[-1] < sma_short[-1]:
             return Decision.BUY
