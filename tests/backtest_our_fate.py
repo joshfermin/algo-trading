@@ -5,6 +5,7 @@ import pandas as pd
 import datetime
 import sys, getopt
 import statistics
+import os
 
 from backtesting.test import SMA, GOOG
 
@@ -136,7 +137,12 @@ def backtest_our_fate(strat, config):
     print('DISREGARD, THIS IS FINE.... I THINK')
 
     # plot it up, plot it up
-    bt.plot(filename=f"tests/plots/{ticker}_{interval}_{span}.html")
+    if not os.path.exists(f'tests/plots'):
+        os.makedirs(f'tests/plots')
+
+    if not os.path.exists(f'tests/plots/{ticker}'):
+        os.makedirs(f'tests/plots/{ticker}')
+    bt.plot(filename=f"tests/plots/{ticker}/{interval}_{span}.html")
 
 
 config = get_config_from_args()
