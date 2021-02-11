@@ -4,9 +4,9 @@ import numpy as np
 from algo_trading.enums import Decision
 
 class SMA:
-    def __init__(self, params={"longer": 200, "shorter": 100}):
-        self.longer = params["longer"]
-        self.shorter = params["shorter"]
+    def __init__(self, longer = 200, shorter = 100):
+        self.longer = longer
+        self.shorter = shorter
 
     """SMA implementation. Pass in prices to return SMA calulations.
     Args:
@@ -15,12 +15,18 @@ class SMA:
     Returns:
         A numpy array. Each element represents the parabolicSAR calculation
     """
-    def calcSMA(self, prices, term):
-        return talib.SMA(prices, term)
+    def calculate(self, close_prices, term):
+        return talib.SMA(close_prices, term)
+
+    def indicators(self):
+        return [
+            {"name": f"sma_short" , "params": { "term": self.shorter }},
+            {"name": f"sma_long" , "params": { "term": self.longer }}
+        ]
     
     def getDecision(self, params):
-        sma_long = self.calcSMA(params['close'], self.longer)
-        sma_short = self.calcSMA(params['close'], self.shorter)
+        sma_long = self.calculate(params['close'], self.longer)
+        sma_short = self.calculate(params['close'], self.shorter)
 
         if sma_long[-1] < sma_short[-1]:
             return Decision.BUY
