@@ -9,8 +9,8 @@
         {
             "name": "parabolic_sar",
             "params": {
-                "accel": 0.012,
-                "max": 0.01
+                "acceleration": 0.012,
+                "maximum": 0.01
             }
         },
         {

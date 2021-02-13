@@ -1,4 +1,4 @@
-class STOP_LOSS:
+class StopLoss:
     def __init__(self, weight, stop_percent):
         self.weight = weight
         self.stop_percent = stop_percent

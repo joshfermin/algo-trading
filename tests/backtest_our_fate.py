@@ -39,7 +39,7 @@ class THE_VERSION_WE_CALL_ONE(Strategy):
         close = self.data.Close
         high = self.data.High
         low = self.data.Low
-        self.mediator = StrategyMediator(config)
+        self.mediator = StrategyMediator(config, for_backtesting=True, backtesting_instance=self)
         self.mediator.setup_indicators(self, high, low, close)
 
     def next(self):
@@ -72,8 +72,8 @@ def backtest_our_fate(strat, config):
     exchange_actions = ExchangeContext(RobinhoodActions())
     crypto_historicals = exchange_actions.get_crypto_historicals(ticker, interval=interval, span=span, bounds="24_7")
 
-    # start_date = datetime.datetime(2021, 1, 2)
-    # end_date = datetime.datetime(2021, 2, 6)
+    start_date = datetime.datetime(2021, 1, 2)
+    end_date = datetime.datetime(2021, 2, 6)
 
     historical_period = handle_time_period(crypto_historicals, start_date, end_date, 100)
 
@@ -95,28 +95,26 @@ def backtest_our_fate(strat, config):
 
     # 
     # Outputs below
-    # 
+    
     output = bt.run()
     print('---------------------------------')
     print("Return [%]:  ", output["Return [%]"])
     print('---------------------------------')
 
-    # optimize_me = bt.optimize(  
-    #                             # parabolic_sar_acceleration=list(float_range(0, 0.02, '0.002')),
-    #                             # parabolic_sar_maximum=list(float_range(0, 0.5, '0.02')),
-    #                             sma_short=range(20, 30),
-    #                             sma_long=range(20, 40),
-    #                             constraint=lambda p: p.sma_short < p.sma_long
-    #                             )
-    # # print(optimize_me.to_string())
-    # print('---------------------------------')
-    # print("Return [%]:  ", optimize_me["Return [%]"])
-    # print("what it is  ", optimize_me["_strategy"])
-    # print('---------------------------------')
-
-    print(' ')
-    print('IF THERE IS AN ERROR LIKE <The system cannot find the file specified.> AND YOU ARE USING WSL')
-    print('DISREGARD, THIS IS FINE.... I THINK')
+ 
+    optimize_me = bt.optimize(  
+                                parabolic_sar_acceleration=list(float_range(0, 0.02, '0.002')),
+                                parabolic_sar_maximum=list(float_range(0, 0.5, '0.02')),
+                                # sma_shorter=range(10, 30),
+                                # sma_longer=range(10, 30),
+                                # constraint=lambda p: p.sma_shorter < p.sma_longer
+                                )
+    # print(optimize_me.to_string())
+    print('---------------------------------')
+    print("Return [%]:  ", optimize_me["Return [%]"])
+    print("what it is  ", optimize_me["_strategy"])
+    print('---------------------------------')
+  
 
     # plot it up, plot it up
     if not os.path.exists(f'tests/plots'):
@@ -128,7 +126,6 @@ def backtest_our_fate(strat, config):
 
 
 config = get_config_from_args()
-
-
+StrategyMediator.set_class_vars(config, THE_VERSION_WE_CALL_ONE)
 backtest_our_fate(THE_VERSION_WE_CALL_ONE, config)
 
