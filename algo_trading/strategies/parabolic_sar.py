@@ -3,8 +3,9 @@ import talib
 import numpy as np
 
 from algo_trading.enums import Decision
+from algo_trading.strategies.base_strategy import BaseStrategy
 
-class ParabolicSAR():
+class ParabolicSAR(BaseStrategy):
     def __init__(self, acceleration = 0.02, maximum = 0.2):
         self.acceleration = acceleration
         self.maximum = maximum

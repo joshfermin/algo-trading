@@ -3,7 +3,9 @@ import talib
 import numpy as np
 
 from algo_trading.enums import Decision
-class RSI:
+from algo_trading.strategies.base_strategy import BaseStrategy
+
+class RSI(BaseStrategy):
     def __init__(self, high=70, low=30):
         self.high = high
         self.low = low

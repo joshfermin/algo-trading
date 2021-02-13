@@ -1,7 +1,8 @@
 from pandas import DataFrame
 from algo_trading.enums import Decision
+from algo_trading.strategies.base_strategy import BaseStrategy
 
-class IchimokuCloud():
+class IchimokuCloud(BaseStrategy):
     def calculate(self, highs, lows, close_prices, span=None):
         highs = DataFrame(highs,columns=['High'])
         lows = DataFrame(lows,columns=['Low'])
