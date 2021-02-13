@@ -13,17 +13,10 @@ class StrategyMediator():
             raise Exception("`strategies` key required in config.")
 
         self.config = config
-        self.strategies = []
-        for strategy in config['strategies']:
-            strategy_class = getattr(importlib.import_module(f"algo_trading.strategies.{strategy['name']}"), strategy['name'])
-            if for_backtesting:
-                strategy_params = {}
-                for param in strategy['params']:
-                    strategy_params[param] = getattr(backtesting_instance, f"{strategy['name']}_{param}")
-                self.strategies.append(strategy_class(**strategy_params))
-            if not for_backtesting:
-                strategy_instance = strategy_class(**strategy['params'])
-                self.strategies.append(strategy_instance)
+        self.for_backtesting = for_backtesting
+        self.backtesting_instance = backtesting_instance
+        self.strategies = self.__instantiate_strategy_classes()
+
 
     def decide(self, params = {"high": None, "low": None, "close": None}):
         decision = None
@@ -50,5 +43,27 @@ class StrategyMediator():
     @staticmethod
     def set_class_vars(config, klass):
         for strategy in config['strategies']:
-            for key, value in strategy['params'].items():
-                setattr(klass, f"{strategy['name']}_{key}", value)
+            if "params" in strategy:
+                for key, value in strategy['params'].items():
+                    setattr(klass, f"{strategy['name']}_{key}", value)
+
+    def __instantiate_strategy_classes(self):
+        strategies = []
+        try:
+            for strategy in self.config['strategies']:
+                strategy_klass = getattr(importlib.import_module(f"algo_trading.strategies.{strategy['name']}"), strategy['name'])
+                if not 'params' in strategy:
+                    strategies.append(strategy_klass())
+                else:
+                    if self.for_backtesting:
+                        strategy_params = {}
+                        for param in strategy['params']:
+                            strategy_params[param] = getattr(self.backtesting_instance, f"{strategy['name']}_{param}")
+                        strategies.append(strategy_klass(**strategy_params))
+                    elif not self.for_backtesting:
+                        strategies.append(strategy_klass(**strategy['params']))
+                       
+            return strategies
+        except TypeError as err:
+            raise f"Please check your config is set up correctly for: ${strategy_klass.__name__}, Error: {err}"
+    
