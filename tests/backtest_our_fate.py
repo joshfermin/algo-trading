@@ -18,20 +18,12 @@ from utils.time import handle_time_period
 from utils.args import get_config_from_args
 from utils.lists import float_range
 
-import decimal
-
-def float_range(start, stop, step):
-    while start < stop:
-        yield float(start)
-        start += decimal.Decimal(step)
-
-
 class THE_VERSION_WE_CALL_ONE(Strategy):
     def init(self, position = 0):
         close = self.data.Close
         high = self.data.High
         low = self.data.Low
-        self.mediator = StrategyMediator(config, for_backtesting=True, backtesting_instance=self)
+        self.mediator = StrategyMediator(self.config, for_backtesting=True, backtesting_instance=self)
         self.mediator.setup_indicators(self, high, low, close)
 
     def next(self):
@@ -48,7 +40,7 @@ class THE_VERSION_WE_CALL_ONE(Strategy):
             relative_position = self.position.size if self.position.size >= 0 else 0
 
 
-def backtest_our_fate(strat, config):
+def backtest_our_fate(strat, config, should_optimize = False):
     ticker = config['symbol']
     cash = config['cash']
     interval = config['historicals']['interval']
@@ -85,22 +77,24 @@ def backtest_our_fate(strat, config):
     print('---------------------------------')
     print("Return [%]:  ", output["Return [%]"])
     print('---------------------------------')
+    
+    if (should_optimize):
+        # TODO: make this dynamic, let strategy mediator return a **kwargs of params
+        optimize_me = bt.optimize(  
+            # parabolic_sar_acceleration=list(float_range(0, 0.02, '0.002')),
+            # parabolic_sar_maximum=list(float_range(0, 0.5, '0.02')),
+            sma_shorter=range(10, 30),
+            sma_longer=range(20, 50),
+            # rsi_high=range(1,100),
+            # rsi_low=range(1,100),
+            constraint=lambda p: p.sma_shorter < p.sma_longer,
+            maximize="Return [%]"
+        )
 
-    optimize_me = bt.optimize(  
-        # parabolic_sar_acceleration=list(float_range(0, 0.02, '0.002')),
-        # parabolic_sar_maximum=list(float_range(0, 0.5, '0.02')),
-        sma_shorter=range(10, 30),
-        sma_longer=range(20, 50),
-        # rsi_high=range(1,100),
-        # rsi_low=range(1,100),
-        constraint=lambda p: p.sma_shorter < p.sma_longer,
-        maximize="Return [%]"
-    )
-
-    print('---------------------------------')
-    print("Return [%]:  ", optimize_me["Return [%]"])
-    print("what it is  ", optimize_me["_strategy"])
-    print('---------------------------------')
+        print('---------------------------------')
+        print("Return [%]:  ", optimize_me["Return [%]"])
+        print("what it is  ", optimize_me["_strategy"])
+        print('---------------------------------')
 
     print(' ')
     print('IF THERE IS AN ERROR LIKE <The system cannot find the file specified.> AND YOU ARE USING WSL')
@@ -117,7 +111,13 @@ def plot_backtest_results(bt, ticker, interval, span):
     
     bt.plot(filename=f"tests/plots/{ticker}/{interval}_{span}.html")
 
-config = get_config_from_args()
-StrategyMediator.set_class_vars(config, THE_VERSION_WE_CALL_ONE)
-backtest_our_fate(THE_VERSION_WE_CALL_ONE, config)
+def main():
+    # TODO: do we want to take inputs from user here? i.e. choose config, choose start/end etc
+    # TODO: or maybe even nuttier, just create a UI WRAPPER for this
+    config = get_config_from_args()
+    THE_VERSION_WE_CALL_ONE.config = config
+    StrategyMediator.set_class_vars(config, THE_VERSION_WE_CALL_ONE)
+    backtest_our_fate(THE_VERSION_WE_CALL_ONE, config)
 
+if __name__ == '__main__':
+    main()
