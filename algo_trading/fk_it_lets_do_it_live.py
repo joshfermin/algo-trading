@@ -60,7 +60,7 @@ class LiveTrading():
 
         decision = self.mediator.decide(params = {"high": historicals['highs'], "low": historicals['lows'], "close": historicals['close']})
 
-        if not self.has_crypto_position() and descion == Decision.BUY.value:
+        if not self.has_crypto_position() and decision == Decision.BUY.value:
             # buy
             buying_power = self.get_crypto_buying_power()
             if (self.cash > buying_power):
@@ -72,7 +72,7 @@ class LiveTrading():
                 # FOR COINS THAT NEED WHOLE NUMBERS:
                 # shares = round(self.cash/float(current_quote['bid_price']), 0)
                 # buy_order = self.exchange_actions.order_crypto_by_quantity(self.symbol, shares, 'gtc')
-        elif self.has_crypto_position() and descion == Decision.SELL.value:
+        elif self.has_crypto_position() and decision == Decision.SELL.value:
             # sell
             position_quantity = float(self.get_crypto_position()['quantity_available'])
             sell_order = self.exchange_actions.sell_crypto_by_quantity(self.symbol, position_quantity, "gtc")
