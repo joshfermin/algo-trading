@@ -1,9 +1,9 @@
 {
     "cash": 10000,
-    "symbol": "LTC",
+    "symbol": "ETH",
     "historicals":{
-        "interval": "5minute",
-        "span": "week"
+        "interval": "hour",
+        "span": "3month"
     },
     "strategies": [
         {
@@ -12,16 +12,6 @@
                 "acceleration": 0.012,
                 "maximum": 0.01
             }
-        },
-        {
-            "name": "rsi",
-            "params": {
-                "high": 60,
-                "low": 42
-            }
-        },
-        {
-            "name": "ichimoku_cloud"
         },
         {
             "name": "sma",
