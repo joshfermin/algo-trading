@@ -86,19 +86,21 @@ def backtest_our_fate(strat, config):
     print("Return [%]:  ", output["Return [%]"])
     print('---------------------------------')
 
-    # optimize_me = bt.optimize(  
-    #     parabolic_sar_acceleration=list(float_range(0, 0.02, '0.002')),
-    #     parabolic_sar_maximum=list(float_range(0, 0.5, '0.02')),
-    #     # sma_shorter=range(10, 30),
-    #     # sma_longer=range(20, 50),
-    #     # constraint=lambda p: p.sma_shorter < p.sma_longer,
-    #     maximize="Return [%]"
-    # )
+    optimize_me = bt.optimize(  
+        # parabolic_sar_acceleration=list(float_range(0, 0.02, '0.002')),
+        # parabolic_sar_maximum=list(float_range(0, 0.5, '0.02')),
+        sma_shorter=range(10, 30),
+        sma_longer=range(20, 50),
+        # rsi_high=range(1,100),
+        # rsi_low=range(1,100),
+        constraint=lambda p: p.sma_shorter < p.sma_longer,
+        maximize="Return [%]"
+    )
 
-    # print('---------------------------------')
-    # print("Return [%]:  ", optimize_me["Return [%]"])
-    # print("what it is  ", optimize_me["_strategy"])
-    # print('---------------------------------')
+    print('---------------------------------')
+    print("Return [%]:  ", optimize_me["Return [%]"])
+    print("what it is  ", optimize_me["_strategy"])
+    print('---------------------------------')
 
     print(' ')
     print('IF THERE IS AN ERROR LIKE <The system cannot find the file specified.> AND YOU ARE USING WSL')
@@ -113,7 +115,6 @@ def plot_backtest_results(bt, ticker, interval, span):
     if not os.path.exists(f'tests/plots/{ticker}'):
         os.makedirs(f'tests/plots/{ticker}')
     
-    print(interval, span)
     bt.plot(filename=f"tests/plots/{ticker}/{interval}_{span}.html")
 
 config = get_config_from_args()
