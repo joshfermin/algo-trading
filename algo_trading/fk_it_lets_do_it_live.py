@@ -6,14 +6,12 @@ from pytz import utc
 from apscheduler.schedulers.blocking import BlockingScheduler
 from algo_trading.exchange.exchange_context import ExchangeContext
 from algo_trading.exchange.robinhood_actions import RobinhoodActions
-from algo_trading.strategies.parabolic_sar import ParabolicSAR
-from algo_trading.strategies.sma import SMA_CROSSOVER_TREND
+from algo_trading.enums import Decision
+from algo_trading.strategies.strategy_mediator import StrategyMediator
 from utils.args import get_config_from_args
 
 
 class LiveTrading():
-
-
     def __init__(self, config, exchange_actions):
         self.symbol = config['symbol']
         self.exchange_actions = exchange_actions
@@ -22,14 +20,7 @@ class LiveTrading():
         self.interval = config['historicals']['interval']
         self.span = config['historicals']['span']
 
-        self.p_sar_accel = config['p_sar']['accel']
-        self.p_sar_max = config['p_sar']['max']
-
-        self.sma_long = config['sma']['long']
-        self.sma_short = config['sma']['short']
-
-        self.p_sar = ParabolicSAR(1, self.p_sar_accel, self.p_sar_max)
-        self.sma = SMA_CROSSOVER_TREND(1, self.sma_long, self.sma_short)
+        self.mediator = StrategyMediator(config)
 
     def get_historicals(self):
         crypto_historicals = self.exchange_actions.get_crypto_historicals(self.symbol, self.interval, self.span, "24_7")
@@ -67,13 +58,9 @@ class LiveTrading():
         
         historicals = self.get_historicals()
 
-        p_sar_score = self.p_sar.getScore(historicals['close'][-1], historicals['highs'], historicals['lows'])
-        sma_score = self.sma.getScore(historicals['close'])
-        
-        scores = np.array([p_sar_score, sma_score])
-        average_score = statistics.mean(scores[scores != 0])
+        decision = self.mediator.decide(params = {"high": historicals['highs'], "low": historicals['lows'], "close": historicals['close']})
 
-        if not self.has_crypto_position() and average_score >= 1:
+        if not self.has_crypto_position() and decision == Decision.BUY.value:
             # buy
             buying_power = self.get_crypto_buying_power()
             if (self.cash > buying_power):
@@ -85,7 +72,7 @@ class LiveTrading():
                 # FOR COINS THAT NEED WHOLE NUMBERS:
                 # shares = round(self.cash/float(current_quote['bid_price']), 0)
                 # buy_order = self.exchange_actions.order_crypto_by_quantity(self.symbol, shares, 'gtc')
-        elif self.has_crypto_position() and average_score == -1:
+        elif self.has_crypto_position() and decision == Decision.SELL.value:
             # sell
             position_quantity = float(self.get_crypto_position()['quantity_available'])
             sell_order = self.exchange_actions.sell_crypto_by_quantity(self.symbol, position_quantity, "gtc")
@@ -119,11 +106,13 @@ def main():
     scheduler = BlockingScheduler(timezone=utc)
 
     if config['historicals']['interval'] == "15second":
-        scheduler.add_job(live_trading.execute, 'cron', second="*/15")
+        scheduler.add_job(live_trading.execute, 'cron', second="*/15", misfire_grace_time=2)
     elif config['historicals']['interval'] == "5minute":
-        scheduler.add_job(live_trading.execute, 'cron', minute="*/5")
+        scheduler.add_job(live_trading.execute, 'cron', minute="*/5", misfire_grace_time=30)
     elif config['historicals']['interval'] == "hour":
-        scheduler.add_job(live_trading.execute, 'cron', hour="*")
+        scheduler.add_job(live_trading.execute, 'cron', hour="*", misfire_grace_time=60)
+    else: 
+        raise "Invalid interval, please check the config file."
     
     try:
         scheduler.start()

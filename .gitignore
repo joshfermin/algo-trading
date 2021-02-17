@@ -68,3 +68,5 @@ target/
 
 # backtesting plots
 tests/plots/*
+algo_trading/configs/*
+!algo_trading/configs/example.json
