@@ -109,6 +109,8 @@ def main():
         scheduler.add_job(live_trading.execute, 'cron', second="*/15", misfire_grace_time=2)
     elif config['historicals']['interval'] == "5minute":
         scheduler.add_job(live_trading.execute, 'cron', minute="*/5", misfire_grace_time=30)
+    elif config['historicals']['interval'] == "10minute":
+        scheduler.add_job(live_trading.execute, 'cron', minute="*/10", misfire_grace_time=45)
     elif config['historicals']['interval'] == "hour":
         scheduler.add_job(live_trading.execute, 'cron', hour="*", misfire_grace_time=60)
     else: 
