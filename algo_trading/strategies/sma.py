@@ -3,6 +3,7 @@ import talib
 import numpy as np
 from algo_trading.enums import Decision
 from algo_trading.strategies.base_strategy import BaseStrategy
+
 class SMA(BaseStrategy):
     def __init__(self, longer = 200, shorter = 100):
         self.longer = longer

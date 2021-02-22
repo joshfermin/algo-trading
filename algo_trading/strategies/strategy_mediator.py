@@ -2,6 +2,7 @@ import importlib
 import numpy as np
 import statistics
 
+from algo_trading.enums import Decision
 from utils.args import get_config_from_args
 
 class StrategyMediator():
@@ -18,16 +19,34 @@ class StrategyMediator():
         self.strategies = self.__instantiate_strategy_classes()
 
 
-    def decide(self, params = {"high": None, "low": None, "close": None}):
+    def decide(self, params = {"high": None, "low": None, "close": None}, has_position = None):
         decision = None
         scores = []
+        gated_decisions = []
         
         for strategy in self.strategies:
-            scores.append(float(strategy.getDecision(params).value))
+            decision = strategy.getDecision(params).value
+            if isinstance(decision, float):
+                scores.append(decision)
+            if isinstance(decision, bool):
+                gated_decisions.append(decision)
+            
+        # if any gated decision says to stop trading, send back noop if no current position
+        if not has_position and any(gated_decisions):
+            return Decision.NOOP
 
-        return statistics.mean(scores)
+        computed_strategy_decision = {
+            1: Decision.BUY,
+            -1: Decision.SELL
+        }.get(statistics.mean(scores), Decision.NOOP)
+
+        if has_position and computed_strategy_decision == Decision.SELL:
+            return Decision.SELL
+        if not has_position and computed_strategy_decision == Decision.BUY:
+            return Decision.BUY
+        return Decision.NOOP
               
-    def setup_indicators(self, backtesting_class_context, highs, lows, closes):
+    def setup_indicators(self, backtesting_class_context, highs, lows, closes, volumes):
         for strategy in self.strategies:
             indicators = strategy.indicators()
             calculate_params = strategy.calculate.__code__.co_varnames
@@ -36,12 +55,13 @@ class StrategyMediator():
                 params = {} 
                 if 'params' in indicator: params = indicator['params']
                 if 'close_prices' in calculate_params: params['close_prices'] = closes
+                if 'volumes' in calculate_params: params['volumes'] = volumes
                 if 'highs' in calculate_params: params['highs'] = highs
                 if 'lows' in calculate_params: params['lows'] = lows
                 setattr(backtesting_class_context, indicator['name'], backtesting_class_context.I(strategy.calculate, **params, name = indicator['name']))
     
     @staticmethod
-    def set_class_vars(config, klass):
+    def set_class_vars_for_optimize(config, klass):
         for strategy in config['strategies']:
             if "params" in strategy:
                 for key, value in strategy['params'].items():
