@@ -6,5 +6,5 @@ class Decision(Enum):
     NOOP = 0.0
 
 class GatedDecision(Enum):
-    CONTINUE_TRADING = False
-    STOP_TRADING = True
+    CAN_HOLD_LONG_POSITION = False
+    CAN_HOLD_SHORT_POSITION = True

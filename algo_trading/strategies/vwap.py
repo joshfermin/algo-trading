@@ -17,7 +17,7 @@ class VWAP(BaseStrategy):
         vwap = self.calculate(params['close'], params['volume'])
 
         if params['close'][-1] > vwap[-1]:
-            return GatedDecision.CONTINUE_TRADING
-        return GatedDecision.STOP_TRADING
+            return GatedDecision.CAN_HOLD_LONG_POSITION
+        return GatedDecision.CAN_HOLD_SHORT_POSITION
 
 vwap = VWAP

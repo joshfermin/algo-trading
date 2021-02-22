@@ -31,7 +31,8 @@ class StrategyMediator():
             if isinstance(decision, bool):
                 gated_decisions.append(decision)
             
-        # if any gated decision says to stop trading, send back noop if no current position
+        # if any gated decision says to hold short position, send back noop if no current position
+        # TODO: implement shorting here if necessary.
         if not has_position and any(gated_decisions):
             return Decision.NOOP
 
