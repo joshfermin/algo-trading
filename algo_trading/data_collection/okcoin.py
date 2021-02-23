@@ -41,8 +41,8 @@ def main():
     for symbol in SYMBOLS_TO_TRACK:
         scheduler.add_job(record_data, 'cron', [symbol[0], symbol[1], 86400, 'day'], day="*")
         scheduler.add_job(record_data, 'cron', [symbol[0], symbol[1], 3600, 'hour'], hour="*")
-        scheduler.add_job(record_data, 'cron', [symbol[0], symbol[1], 300, 'five_minutes'], minute="*/5")
-        scheduler.add_job(record_data, 'cron', [symbol[0], symbol[1], 60, 'one_minute'], minute="*")
+        scheduler.add_job(record_data, 'cron', [symbol[0], symbol[1], 300, '5minute'], minute="*/5")
+        scheduler.add_job(record_data, 'cron', [symbol[0], symbol[1], 60, 'minute'], minute="*")
     
     try:
         scheduler.start()
