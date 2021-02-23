@@ -58,7 +58,7 @@ class LiveTrading():
         
         historicals = self.get_historicals()
 
-        decision = self.mediator.decide(params = {"high": historicals['highs'], "low": historicals['lows'], "close": historicals['close']}, self.has_crypto_position())
+        decision = self.mediator.decide(params = {"high": historicals['highs'], "low": historicals['lows'], "close": historicals['close']}, has_position = self.has_crypto_position())
 
         if decision == Decision.BUY.value:
             # buy
