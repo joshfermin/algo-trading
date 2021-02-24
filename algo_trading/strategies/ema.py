@@ -1,7 +1,7 @@
 import time
 import talib
 import numpy as np
-from algo_trading.enums import Decision
+from algo_trading.enums import GatedDecision
 from algo_trading.strategies.base_strategy import BaseStrategy
 
 class EMA(BaseStrategy):
@@ -20,7 +20,7 @@ class EMA(BaseStrategy):
         ema = self.calculate(params['close'], self.period)
 
         if ema[-1] < params['close'][-1]:
-            return Decision.BUY
-        return Decision.SELL
+            return GatedDecision.CAN_HOLD_LONG_POSITION
+        return GatedDecision.CAN_HOLD_SHORT_POSITION
 
 ema = EMA
