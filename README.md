@@ -16,9 +16,10 @@ A live trading and backtesting python app.
 ### MacOS: 
 
 pyenv installation and python version:
-```
+```bash
 brew update
 brew install pyenv
+echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.zshrc # or ~/.bashrc
 pyenv install 3.9.2
 ```
 
