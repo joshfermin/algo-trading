@@ -2,6 +2,7 @@ import numpy as np
 import statistics
 import time
 
+from datetime import datetime
 from pytz import utc
 from apscheduler.schedulers.blocking import BlockingScheduler
 from algo_trading.exchange.exchange_context import ExchangeContext
@@ -54,7 +55,7 @@ class LiveTrading():
         order_id = None
 
         position = self.get_crypto_position()
-        current_quote = self.get_crypto_quote()
+        print(f"Starting execution: {datetime.now()}, position quantity: {position['quantity']}, with cash: {self.cash}")
         
         historicals = self.get_historicals()
 
