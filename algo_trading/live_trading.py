@@ -2,6 +2,7 @@ import numpy as np
 import statistics
 import time
 
+from datetime import datetime
 from pytz import utc
 from apscheduler.schedulers.blocking import BlockingScheduler
 from algo_trading.exchange.exchange_context import ExchangeContext
@@ -54,13 +55,13 @@ class LiveTrading():
         order_id = None
 
         position = self.get_crypto_position()
-        current_quote = self.get_crypto_quote()
+        print(f"Starting execution: {datetime.now()}, position quantity: {position['quantity']}, with cash: {self.cash}")
         
         historicals = self.get_historicals()
 
-        decision = self.mediator.decide(params = {"high": historicals['highs'], "low": historicals['lows'], "close": historicals['close']})
+        decision = self.mediator.decide(params = {"high": historicals['highs'], "low": historicals['lows'], "close": historicals['close']}, has_position = self.has_crypto_position())
 
-        if not self.has_crypto_position() and decision == Decision.BUY.value:
+        if decision == Decision.BUY:
             # buy
             buying_power = self.get_crypto_buying_power()
             if (self.cash > buying_power):
@@ -72,7 +73,7 @@ class LiveTrading():
                 # FOR COINS THAT NEED WHOLE NUMBERS:
                 # shares = round(self.cash/float(current_quote['bid_price']), 0)
                 # buy_order = self.exchange_actions.order_crypto_by_quantity(self.symbol, shares, 'gtc')
-        elif self.has_crypto_position() and decision == Decision.SELL.value:
+        elif decision == Decision.SELL:
             # sell
             position_quantity = float(self.get_crypto_position()['quantity_available'])
             sell_order = self.exchange_actions.sell_crypto_by_quantity(self.symbol, position_quantity, "gtc")
@@ -109,6 +110,8 @@ def main():
         scheduler.add_job(live_trading.execute, 'cron', second="*/15", misfire_grace_time=2)
     elif config['historicals']['interval'] == "5minute":
         scheduler.add_job(live_trading.execute, 'cron', minute="*/5", misfire_grace_time=30)
+    elif config['historicals']['interval'] == "10minute":
+        scheduler.add_job(live_trading.execute, 'cron', minute="*/10", misfire_grace_time=45)
     elif config['historicals']['interval'] == "hour":
         scheduler.add_job(live_trading.execute, 'cron', hour="*", misfire_grace_time=60)
     else: 

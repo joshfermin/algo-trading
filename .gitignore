@@ -70,3 +70,5 @@ target/
 tests/plots/*
 algo_trading/configs/*
 !algo_trading/configs/example.json
+
+.history/*

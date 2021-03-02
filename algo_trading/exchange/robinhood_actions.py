@@ -12,7 +12,10 @@ class RobinhoodActions(BaseActions):
     Strategies.
     """
     def __init__(self):
-        r.login(username=RH_USERNAME, password=RH_PASSWORD, mfa_code=pyotp.TOTP(RH_TWO_FACTOR).now())
+        if RH_TWO_FACTOR == None:
+            r.login(username=RH_USERNAME, password=RH_PASSWORD)
+        else:
+            r.login(username=RH_USERNAME, password=RH_PASSWORD, mfa_code=pyotp.TOTP(RH_TWO_FACTOR).now())
 
     def get_account_profile(self, info=None) -> dict:
         return r.profiles.load_account_profile(info)
